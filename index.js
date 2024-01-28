@@ -111,6 +111,6 @@ async function serviceFunction(data, res) {
 
 
 
-app.listen(process.env.PORT || 5500, function () {
+app.listen(process.env.PORT || 3000, function () {
   console.log("Server started on port 5500");
 });
