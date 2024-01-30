@@ -6,7 +6,7 @@ import fetch from "node-fetch";
 import CircularJSON from "circular-json";
 
 const app = express();
-var newdata;
+var newdata = false;
 
 app.use(express.json());
 
@@ -31,11 +31,11 @@ initializeApp({
 
 
 app.post('/send-acvalue', (req, res) => {
-  newdata = CircularJSON.stringify(req.body.data);
-  console.log('Received data:', newdata);// Data sent from the client
-
+  //newdata = CircularJSON.stringify(req.body);
+  newdata = req.body;
+  
   // Send a response
-  res.status(200).json({ message: 'Data received successfully!' });
+  res.status(200).json(newdata);
 });
 
 
