@@ -3,10 +3,12 @@ import { getMessaging } from "firebase-admin/messaging";
 import express, { json, response } from "express";
 import cors from "cors";
 import fetch from "node-fetch";
+import CircularJSON from "circular-json";
 
 const app = express();
-app.use(express.json());
+var newdata;
 
+app.use(express.json());
 
 app.use(
   cors({
@@ -15,7 +17,6 @@ app.use(
 
   })
 );
-
 
 app.use(function (req, res, next) {
   res.setHeader("Content-Type", "application/json");
@@ -27,6 +28,23 @@ initializeApp({
   credential: applicationDefault(),
   projectId: 'aquanex-cbd72',
 });
+
+
+app.post('/send-acvalue', (req, res) => {
+  newdata = CircularJSON.stringify(req.body.data);
+  console.log('Received data:', newdata);// Data sent from the client
+
+  // Send a response
+  res.status(200).json({ message: 'Data received successfully!' });
+});
+
+
+  app.get('/get-acvalue', (req, res) => {
+
+    res.json(newdata);
+    console.log(newdata);
+    
+  });
 
 
 setInterval(async (req, res) => {
@@ -42,13 +60,13 @@ setInterval(async (req, res) => {
     console.log(data);
 
     serviceFunction(data, res)
-    
+
 
   } catch (error) {
     console.error(error);
     res.status(500).send('Error fetching data');
   }
-},15000);
+}, 15000);
 
 async function serviceFunction(data, res) {
 
@@ -91,7 +109,7 @@ async function serviceFunction(data, res) {
       },
       token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
     })
-    
+
     // .then((response) => {
     //   res.status(200).json({
     //     message: "Successfully sent message",
@@ -112,5 +130,5 @@ async function serviceFunction(data, res) {
 
 
 app.listen(process.env.PORT || 3000, function () {
-  console.log("Server started on port 5500");
+  console.log("Server started on port 3000");
 });
