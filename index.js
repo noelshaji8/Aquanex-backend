@@ -32,7 +32,8 @@ initializeApp({
 
 app.post('/send-acvalue', (req, res) => {
   //newdata = CircularJSON.stringify(req.body);
-  newdata = req.body;
+ // newdata = req.body;
+  newdata = {"value":"false"};
   
   // Send a response
   res.status(200).json(newdata);
@@ -90,7 +91,7 @@ async function serviceFunction(data, res) {
       console.log("Successfully sent message:", response);
     })
       .catch((error) => {
-        res.status(400);
+        
         res.send(error);
         console.log("Error sending message:", error);
       });
@@ -98,7 +99,7 @@ async function serviceFunction(data, res) {
 
 
 
-  if (temp > 25 || temp < 22) {
+  if (temp > 30 || temp < 22) {
 
 
 
