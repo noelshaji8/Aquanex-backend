@@ -6,7 +6,7 @@ import fetch from "node-fetch";
 import CircularJSON from "circular-json";
 
 const app = express();
-var newdata = false;
+var newdata;
 
 app.use(express.json());
 
