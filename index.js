@@ -31,9 +31,9 @@ initializeApp({
 
 
 app.post('/send-acvalue', (req, res) => {
-  //newdata = CircularJSON.stringify(req.body);
+  newdata = CircularJSON.stringify(req.body);
  // newdata = req.body;
-  newdata = {"value":"false"};
+  //newdata = {"value":"false"};
   
   // Send a response
   res.status(200).json(newdata);
