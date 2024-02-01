@@ -67,7 +67,7 @@ setInterval(async (req, res) => {
     console.error(error);
     res.status(500).send('Error fetching data');
   }
-}, 15000);
+}, 5000);
 
 async function serviceFunction(data, res) {
 
