@@ -106,7 +106,7 @@ async function serviceFunction(data, res) {
 
 
 
-  if (temp > 30 || temp < 22) {
+  if (temp > 25 || temp < 22) {
 
     await getMessaging().send({
       notification: {
