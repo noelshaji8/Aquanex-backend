@@ -44,7 +44,7 @@ app.get('/get-acvalue', (req, res) => {
 
 });
 
-cron.schedule("*/10 * * * * *", async (res) => {
+app.get('/get-notivalue', async (req, res) => {
 
   try {
     const apiUrl = "https://api.thingspeak.com/channels/2336234/feeds.json?api_key=ED1802UZPY1V5E5J&results=1";
@@ -63,8 +63,29 @@ cron.schedule("*/10 * * * * *", async (res) => {
     console.error(error);
     res.status(500).send('Error fetching data');
   }
-
 });
+
+// cron.schedule("*/10 * * * * *", async (res) => {
+
+//   try {
+//     const apiUrl = "https://api.thingspeak.com/channels/2336234/feeds.json?api_key=ED1802UZPY1V5E5J&results=1";
+//     const response = await fetch(apiUrl);
+
+//     if (!response.ok) {
+//       throw new Error(`API request failed with status ${response.status}`);
+//     }
+
+//     const data = await response.json();
+//     console.log(data);
+
+//     serviceFunction(data, res)
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Error fetching data');
+//   }
+
+// });
 
 // setInterval(async (req, res) => {
 //   try {
@@ -103,8 +124,6 @@ async function serviceFunction(data, res) {
     })
 
   }
-
-
 
   if (temp > 25 || temp < 22) {
 
