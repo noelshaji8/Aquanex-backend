@@ -43,7 +43,7 @@ app.post('/send-acvalue', (req, res) => {
   app.get('/get-acvalue', (req, res) => {
 
     res.json(newdata);
-    console.log(newdata);
+    //console.log(newdata);
     
   });
 
