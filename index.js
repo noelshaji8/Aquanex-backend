@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const { privateKey } = JSON.parse(process.env.CYCLIC_PRIVATE_KEY)
+
 const app = express();
 
 var newdata;
@@ -54,7 +56,8 @@ initializeApp({
   credential: cert({
     projectId: process.env.CYCLIC_PROJECT_ID,
     clientEmail: process.env.CYCLIC_CLIENT_EMAIL,
-    privateKey: process.env.CYCLIC_PRIVATE_KEY
+    //privateKey: process.env.CYCLIC_PRIVATE_KEY
+    privateKey: privateKey,
   }),
   
   
