@@ -1,16 +1,17 @@
-import { initializeApp, applicationDefault } from 'firebase-admin/app';
+import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
 import { getMessaging } from "firebase-admin/messaging";
 import express, { json, response } from "express";
 import cors from "cors";
 import fetch from "node-fetch";
-import CircularJSON from "circular-json";
-import cron from "node-cron";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 
 var newdata;
-var ph
-var temp;
+var ph = 4
+var temp = 26;
 var acval = false;
 var automode = true;
 var actno = 1;
@@ -33,9 +34,30 @@ app.use(function (req, res, next) {
 });
 
 
+// initializeApp({
+//   credential: applicationDefault(),
+//   projectId: 'aquanex-cbd72',
+// });
+
+
+// initializeApp({
+//      credential: admin.credential.cert({
+//        projectId: "aquanex-cbd72",
+//        clientEmail: "firebase-adminsdk-6xeg6@aquanex-cbd72.iam.gserviceaccount.com",
+//        privateKey: "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCqrTaMglyRv0vc\nC+qtIDiS3R9KR4yiuAz7kV6UFv1hUc18uWJFDpI3si0p3D5gsiN6S9DCpPlz7zqi\nbj32HEVerl0KCzuxTbtcipns6vhF7bdXcRLVMWc6U/tf/KTCOSSwDX3kTxqaZuTL\nST9+GCPDflaIoV7XSwAxIxwCWrbK25Mj+iZU5tNsLIAZlsnpZjTZ8z1MEkOF5FTs\nkGcGJ7rLHyE31xNTISmArQV2DwRghP+arIl9m9Socma3fkz//e4oqxEOdMyq6JEY\nj1ZheAex7L9uKkVp0xM0lTxAEfG6ulj0dVpexpkdqqvIJptePxgkxdhAuZ+uoQpS\nsgl+0JbzAgMBAAECggEAAmSM13C7kjao2awcz6RlWzgGP1j8KGZpuwoBVfAESYJZ\nuVvXIMdulqEpfVvRmOmWbZlsEwjKoaOsK2jwG0yK4UiS78Xlivu6yFrZXyltkzKK\nwNRKNPGolC8eOkhXYrFlrjQsgQKKm92u/eN17XxpS1+MIE70kMlodn6/cP3dlORP\ncgGhcfoV6rasc/lqAdwAr0GNEQhCZ1lseajV8DhgbW5B9cekqsobxqqeMKKapXwD\nD6gmIZgBz5R++f3k1SW0NdNIcXKw5l0X04Wj1riV25wiB12Emcfz8tpkNmyA3mAW\nTg2Kv+6Tjs+GrlRn9JT1cqOK8SjoaUIMHnHFpXWsYQKBgQDRDga447ygVfXMadx0\nd1Kduw4hQ/E+M/ZuIoFYygl/SZqvM/6mgu2AeB8YdsiGWKfnJI6+npB7yaHZ3yGw\nB7ZB3RxC0esn6/UJwJLnCHgSZqX6RD7K1+eUe3/eP1EiN0OInOSQggmA4hBjSKGI\n0BpKoNoBvshgvdrO2PpaBar6YQKBgQDRAO7dEAOtzI0HxWsWxwkcDdAkcm8711xj\nCNKlQYDdmh/Z35MzWty1u+GnY483LLfJUtni002q3MdcDHtFfSfelFdsSzpRCuZC\nxNwSvgszZMsetBtLABpCsVioWUbon7eqCAo0yIbdS2bCVrx1xTJjOyl4z+F7y2jt\nEE6OtajZ0wKBgFGFOrHWfLO5UYRIs6Lm9Nx1GOl36RbshGgmJHJPNqzgMuWnTOH5\npEu4i8eqaj+ZSsAjzVYf1w+ubOLc0/Ikz7mXU3HrEdwbcw4+fgqBjvD9/jM9cY7/\n6lpIXnB4GFdTXY5kP+zqCHKttN5CcFs9a0M2vkx37QNshWqrydRY6XeBAoGARS/4\n4sdNYHhpa1woEjc7RcUw1Q/o0Ld/Ru2BxeEERtehmZ9QfFyk2ahjj+T+YPZ1tLiv\nlk361QgXGtqq6BsBWsZill/k4zUneozuiWnODWpdb0GSE2bqSo+o2LoNJi7RPwFA\nV67WLmWqk8TgyF/KSV0pYmv2qeNxTaDrUITEa68CgYBaCPoeDCHFPs8C9fQiAUdS\nXgLZtIBe/QuKFN0YHE4kDv60e9Br41Ecm7WbE8AXZOM3pqPis8Q2UzTCS1saUK8O\nr0bGPzbUFrCN4jnKQxt79npYNbSgEk9hytR+5Ceoec8dFGA9yspXisi4D+nDenpI\ntr1HLVjV+ztSz4lUVneBXQ==\n-----END PRIVATE KEY-----\n"
+//      }),
+     
+//    });
+
+
 initializeApp({
-  credential: applicationDefault(),
-  projectId: 'aquanex-cbd72',
+  credential: cert({
+    projectId: process.env.CYCLIC_PROJECT_ID,
+    clientEmail: process.env.CYCLIC_CLIENT_EMAIL,
+    privateKey: process.env.CYCLIC_PRIVATE_KEY
+  }),
+  
+  
 });
 
 
