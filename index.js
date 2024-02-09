@@ -19,8 +19,8 @@ var automode = true;
 var actno = 1;
 var isDoneMotor = false;
 var isDoneFeeder = false;
-var MotoractnoToint = 0;
-var FeederactnoToint = 0;
+var MotoractnoToint;
+var FeederactnoToint;
 
 app.use(express.json());
 
