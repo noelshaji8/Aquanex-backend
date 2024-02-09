@@ -150,7 +150,7 @@ app.post('/send-acvalue', async (req, res) => {
           isDoneMotor = true;
 
           try {
-            const apiUrl = `https://api.thingspeak.com/update?api_key=LL52TJDT6GSRMIOW&field3=${MotoractnoToint}`;
+            const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}`;
             const response = await fetch(apiUrl, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }
@@ -206,7 +206,7 @@ app.post('/send-acvalue', async (req, res) => {
 
 
           try {
-            const apiUrl = `https://api.thingspeak.com/update?api_key=LL52TJDT6GSRMIOW&field4=${FeederactnoToint}`;
+            const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field2=${FeederactnoToint}`;
             const response = await fetch(apiUrl, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }
@@ -271,7 +271,7 @@ app.post('/send-acvalue', async (req, res) => {
     }
 
     try {
-      const apiUrl = `https://api.thingspeak.com/update?api_key=LL52TJDT6GSRMIOW&field3=${MotoractnoToint}&field4=${FeederactnoToint}`;
+      const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
