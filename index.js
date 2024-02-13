@@ -19,7 +19,7 @@ var automode = true;
 var actno = 1;
 var isDoneMotor = false;
 var isDoneFeeder = false;
-var MotoractnoToint;
+var MotoractnoToint ;
 var FeederactnoToint;
 
 app.use(express.json());
@@ -250,6 +250,11 @@ app.post('/send-acvalue', async (req, res) => {
 
   }
   else {    
+    
+    if(MotoractnoToint==undefined || FeederactnoToint==undefined){
+      MotoractnoToint=0;
+      FeederactnoToint=0;
+    }
 
     if (newdata["actuator"] == 1) {
       if (newdata["value"] == true) {
