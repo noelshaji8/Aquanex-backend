@@ -260,16 +260,16 @@ app.post('/send-acvalue', async (req, res) => {
       if (newdata["value"] == true) {
         MotoractnoToint = 1;
       }
-      else {
+      else if(newdata["value"] == false){
         MotoractnoToint = 0;
       }
       
     }
-    else if (newdata["actuator"] == 2) {
+    if (newdata["actuator"] == 2) {
       if (newdata["value"] == true) {
         FeederactnoToint = 1;
       }
-      else {
+      else if(newdata["value"] == false){
         FeederactnoToint = 0;
       }
       
