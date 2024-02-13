@@ -180,11 +180,11 @@ app.post('/send-acvalue', async (req, res) => {
           }
 
           setTimeout(() => { isDoneMotor = false; }, 30000);
-          
+
         }
-        else{
+        else {
           MotoractnoToint = 0;
-          
+
         }
         res.send(`${MotoractnoToint}`);
 
@@ -235,10 +235,10 @@ app.post('/send-acvalue', async (req, res) => {
           }
 
           setTimeout(() => { isDoneFeeder = false; }, 30000);
-          
+
         }
-        else{
-          FeederactnoToint = 0;   
+        else {
+          FeederactnoToint = 0;
         }
         res.send(`${FeederactnoToint}`);
 
@@ -249,31 +249,56 @@ app.post('/send-acvalue', async (req, res) => {
     }
 
   }
-  else {    
-    
+  else {
+
     // if(MotoractnoToint==undefined || FeederactnoToint==undefined){
     //   MotoractnoToint=0;
     //   FeederactnoToint=0;
     // }
 
-    if (newdata["actuator"] == 1) {
-      if (newdata["value"] == true) {
-        MotoractnoToint = 1;
-      }
-      else if(newdata["value"] == false){
-        MotoractnoToint = 0;
-      }
-      
+    // if (newdata["actuator"] === 1) {
+    //   if (newdata["value"] == true) {
+    //     MotoractnoToint = 1;
+    //   }
+    //   else if(newdata["value"] == false){
+    //     MotoractnoToint = 0;
+    //   }
+
+    // }
+    // elseif (newdata["actuator"] === 2) {
+    //   if (newdata["value"] == true) {
+    //     FeederactnoToint = 1;
+    //   }
+    //   else if(newdata["value"] == false){
+    //     FeederactnoToint = 0;
+    //   }
+
+    // }
+
+
+    switch (newdata["actuator"]) {
+      case 1:
+        if (newdata["value"] == true) {
+          MotoractnoToint = 1;
+        } else if (newdata["value"] == false) {
+          MotoractnoToint = 0;
+        }
+        break;
+
+      case 2:
+        if (newdata["value"] == true) {
+          FeederactnoToint = 1;
+        } else if (newdata["value"] == false) {
+          FeederactnoToint = 0;
+        }
+        break;
+
+      default:
+        // Handle default case if needed
+        break;
     }
-    if (newdata["actuator"] == 2) {
-      if (newdata["value"] == true) {
-        FeederactnoToint = 1;
-      }
-      else if(newdata["value"] == false){
-        FeederactnoToint = 0;
-      }
-      
-    }
+
+
 
     try {
       const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
@@ -338,7 +363,7 @@ app.get('/get-noti', async (req, res) => {
       })
     }
 
-   
+
 
   }
 
