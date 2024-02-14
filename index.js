@@ -17,10 +17,15 @@ var temp = 26;
 var acval = false;
 var automode = true;
 var actno = 1;
-var isDoneMotor = false;
-var isDoneFeeder = false;
+// var isDoneMotor = false;
+// var isDoneFeeder = false;
 var MotoractnoToint = 0;
 var FeederactnoToint = 0;
+var previousTimeMotor = 0;
+var eventIntervalMotor = 30;
+var previousTimeFeeder = 0;
+var eventIntervalFeeder = 30;
+
 
 app.use(express.json());
 
@@ -133,6 +138,10 @@ initializeApp({
 //POST REQ FROM APP AND POST TO TS
 app.post('/send-acvalue', async (req, res) => {
 
+  let currentTimeMotor = Math.floor(Date.now()/1000);
+  let currentTimeFeeder = Math.floor(Date.now()/1000);
+   
+
   newdata = req.body;
   acval = newdata["value"];
   automode = newdata["automode"];
@@ -142,12 +151,12 @@ app.post('/send-acvalue', async (req, res) => {
     //console.log("auto");
     if (actno == 1) {
       //console.log("Motor");
-      if (!isDoneMotor) {
+      if (currentTimeMotor - previousTimeMotor >= eventIntervalMotor) {
         //console.log("reload done");
         if (ph > 5 || ph < 0 || temp > 25 || temp < 22) {
           //console.log("value crossed");
           MotoractnoToint = 1;
-          isDoneMotor = true;
+          previousTimeMotor = currentTimeMotor;
 
           try {
             const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
@@ -179,7 +188,7 @@ app.post('/send-acvalue', async (req, res) => {
             });
           }
 
-          setTimeout(() => { isDoneMotor = false; }, 30000);
+          
 
         }
         else {
@@ -194,15 +203,17 @@ app.post('/send-acvalue', async (req, res) => {
         res.status(409).send("reload Not Done");
       }
     }
+
+    //CHANGE VALUES TO OPTIMUM
     else if (actno = 2) {
       //console.log("Feeder");
-      if (!isDoneFeeder) {
+      if (currentTimeFeeder - previousTimeFeeder >= eventIntervalFeeder) {
         //console.log("reload done");
         if (ph > 5 || ph < 0 || temp > 25 || temp < 22) {
 
           //console.log("value crossed");
           FeederactnoToint = 1;
-          isDoneFeeder = true;
+          previousTimeFeeder = currentTimeFeeder;
 
 
           try {
@@ -234,8 +245,7 @@ app.post('/send-acvalue', async (req, res) => {
             });
           }
 
-          setTimeout(() => { isDoneFeeder = false; }, 30000);
-
+          
         }
         else {
           FeederactnoToint = 0;
