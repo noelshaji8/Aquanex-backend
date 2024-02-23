@@ -182,8 +182,8 @@ app.get('/get-noti', notiTrigger, async (req, res) => {
 
   if (automode) {
 
-    
-    rizzponse = rizzponse+"\nauto";
+
+    rizzponse = rizzponse + "\nauto";
 
     //console.log("Motor");
     if (currentTimeMotor - previousTimeMotor >= eventIntervalMotor) {
@@ -228,6 +228,23 @@ app.get('/get-noti', notiTrigger, async (req, res) => {
       }
       else {
         MotoractnoToint = 0;
+        try {
+          const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+          }
+
+        }
+
+        catch (error) {
+          console.error(error);
+          res.status(500).send('Error fetching data');
+        }
 
       }
 
@@ -286,6 +303,23 @@ app.get('/get-noti', notiTrigger, async (req, res) => {
       }
       else {
         FeederactnoToint = 0;
+        try {
+          const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+          }
+
+        }
+
+        catch (error) {
+          console.error(error);
+          res.status(500).send('Error fetching data');
+        }
       }
 
       rizzponse = rizzponse + `\n${FeederactnoToint}`;
