@@ -12,19 +12,18 @@ const { privateKey } = JSON.parse(process.env.CYCLIC_PRIVATE_KEY)
 const app = express();
 
 var newdata;
-var ph = 4
-var temp = 26;
+var ph;
+var temp;
 var acval = false;
 var automode = true;
 var actno = 1;
-// var isDoneMotor = false;
-// var isDoneFeeder = false;
-var MotoractnoToint =0 ;
-var FeederactnoToint =0;
+var MotoractnoToint = 0;
+var FeederactnoToint = 0;
 var previousTimeMotor = 0;
-var eventIntervalMotor = 30;
+var eventIntervalMotor = 60;
 var previousTimeFeeder = 0;
-var eventIntervalFeeder = 30;
+var eventIntervalFeeder = 60;
+var data;
 
 
 app.use(express.json());
@@ -43,22 +42,6 @@ app.use(function (req, res, next) {
 });
 
 
-// initializeApp({
-//   credential: applicationDefault(),
-//   projectId: 'aquanex-cbd72',
-// });
-
-
-// initializeApp({
-//      credential: admin.credential.cert({
-//        projectId: "aquanex-cbd72",
-//        clientEmail: "firebase-adminsdk-6xeg6@aquanex-cbd72.iam.gserviceaccount.com",
-//        privateKey: "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCqrTaMglyRv0vc\nC+qtIDiS3R9KR4yiuAz7kV6UFv1hUc18uWJFDpI3si0p3D5gsiN6S9DCpPlz7zqi\nbj32HEVerl0KCzuxTbtcipns6vhF7bdXcRLVMWc6U/tf/KTCOSSwDX3kTxqaZuTL\nST9+GCPDflaIoV7XSwAxIxwCWrbK25Mj+iZU5tNsLIAZlsnpZjTZ8z1MEkOF5FTs\nkGcGJ7rLHyE31xNTISmArQV2DwRghP+arIl9m9Socma3fkz//e4oqxEOdMyq6JEY\nj1ZheAex7L9uKkVp0xM0lTxAEfG6ulj0dVpexpkdqqvIJptePxgkxdhAuZ+uoQpS\nsgl+0JbzAgMBAAECggEAAmSM13C7kjao2awcz6RlWzgGP1j8KGZpuwoBVfAESYJZ\nuVvXIMdulqEpfVvRmOmWbZlsEwjKoaOsK2jwG0yK4UiS78Xlivu6yFrZXyltkzKK\nwNRKNPGolC8eOkhXYrFlrjQsgQKKm92u/eN17XxpS1+MIE70kMlodn6/cP3dlORP\ncgGhcfoV6rasc/lqAdwAr0GNEQhCZ1lseajV8DhgbW5B9cekqsobxqqeMKKapXwD\nD6gmIZgBz5R++f3k1SW0NdNIcXKw5l0X04Wj1riV25wiB12Emcfz8tpkNmyA3mAW\nTg2Kv+6Tjs+GrlRn9JT1cqOK8SjoaUIMHnHFpXWsYQKBgQDRDga447ygVfXMadx0\nd1Kduw4hQ/E+M/ZuIoFYygl/SZqvM/6mgu2AeB8YdsiGWKfnJI6+npB7yaHZ3yGw\nB7ZB3RxC0esn6/UJwJLnCHgSZqX6RD7K1+eUe3/eP1EiN0OInOSQggmA4hBjSKGI\n0BpKoNoBvshgvdrO2PpaBar6YQKBgQDRAO7dEAOtzI0HxWsWxwkcDdAkcm8711xj\nCNKlQYDdmh/Z35MzWty1u+GnY483LLfJUtni002q3MdcDHtFfSfelFdsSzpRCuZC\nxNwSvgszZMsetBtLABpCsVioWUbon7eqCAo0yIbdS2bCVrx1xTJjOyl4z+F7y2jt\nEE6OtajZ0wKBgFGFOrHWfLO5UYRIs6Lm9Nx1GOl36RbshGgmJHJPNqzgMuWnTOH5\npEu4i8eqaj+ZSsAjzVYf1w+ubOLc0/Ikz7mXU3HrEdwbcw4+fgqBjvD9/jM9cY7/\n6lpIXnB4GFdTXY5kP+zqCHKttN5CcFs9a0M2vkx37QNshWqrydRY6XeBAoGARS/4\n4sdNYHhpa1woEjc7RcUw1Q/o0Ld/Ru2BxeEERtehmZ9QfFyk2ahjj+T+YPZ1tLiv\nlk361QgXGtqq6BsBWsZill/k4zUneozuiWnODWpdb0GSE2bqSo+o2LoNJi7RPwFA\nV67WLmWqk8TgyF/KSV0pYmv2qeNxTaDrUITEa68CgYBaCPoeDCHFPs8C9fQiAUdS\nXgLZtIBe/QuKFN0YHE4kDv60e9Br41Ecm7WbE8AXZOM3pqPis8Q2UzTCS1saUK8O\nr0bGPzbUFrCN4jnKQxt79npYNbSgEk9hytR+5Ceoec8dFGA9yspXisi4D+nDenpI\ntr1HLVjV+ztSz4lUVneBXQ==\n-----END PRIVATE KEY-----\n"
-//      }),
-
-//    });
-
-
 initializeApp({
   credential: cert({
     projectId: process.env.CYCLIC_PROJECT_ID,
@@ -67,224 +50,74 @@ initializeApp({
     privateKey: privateKey,
   }),
 
-
 });
 
-//NOTIFICATION TRIGGER
-// const notiTrigger = async (req, res, next) => {
-
-//   try {
-//     const apiUrl = "https://api.thingspeak.com/channels/2336234/feeds.json?api_key=ED1802UZPY1V5E5J&results=1";
-//     const response = await fetch(apiUrl);
-
-//     if (!response.ok) {
-//       throw new Error(`API request failed with status ${response.status}`);
-//     }
-
-//     const data = await response.json();
-
-//     const temp = data["feeds"][0]["field1"];
-//     const ph = data["feeds"][0]["field2"];
-
-//     if (ph > 5 || ph < 0) {
-
-//       await getMessaging().send({
-//         notification: {
-//           title: "pH",
-//           body: "Threshold crossed",
-//         },
-//         token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
-//       })
-
-//     }
-
-//     if (temp > 25 || temp < 22) {
-
-//       await getMessaging().send({
-//         notification: {
-//           title: "Temperature",
-//           body: "Threshold crossed",
-//         },
-//         token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
-//       })
-//     }
-
-//     next();
-
-//   }
-
-//   catch (error) {
-//     console.error(error);
-//     res.status(500).send('Error fetching data');
-//   }
 
 
-// }
+const notiTrigger = async (req, res, next) => {
+
+  try {
+    const apiUrl = "https://api.thingspeak.com/channels/2336234/feeds.json?api_key=ED1802UZPY1V5E5J&results=1";
+    let response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    data = await response.json();
+
+    temp = data["feeds"][0]["field1"];
+    ph = data["feeds"][0]["field2"];
+
+    if (ph > 5 || ph < 0) {
+
+      await getMessaging().send({
+        notification: {
+          title: "pH",
+          body: "Threshold crossed",
+        },
+        token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
+      })
+
+    }
+
+    if (temp > 24 || temp < 22) {
+
+      await getMessaging().send({
+        notification: {
+          title: "Temperature",
+          body: "Threshold crossed",
+        },
+        token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
+      })
+    }
 
 
 
-// app.post('/send-acvalue', (req, res) => {
+  }
 
-//   newdata = req.body;
-//   acval = newdata["value"];
-//   automode = newdata["automode"];
-//   actno = newdata["actuator"];
+  catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching data');
+  }
+  next();
 
-//   console.log(newdata);
-//   res.status(200).json(newdata);
-// });
+}
 
 
 //POST REQ FROM APP AND POST TO TS
 app.post('/send-acvalue', async (req, res) => {
 
-  let currentTimeMotor = Math.floor(Date.now()/1000);
-  let currentTimeFeeder = Math.floor(Date.now()/1000);
-   
-
   newdata = req.body;
-  acval = newdata["value"];
+  // acval = newdata["value"];
   automode = newdata["automode"];
-  actno = newdata["actuator"];
-
-  if (automode) {
-    //console.log("auto");
-    if (actno == 1) {
-      //console.log("Motor");
-      if (currentTimeMotor - previousTimeMotor >= eventIntervalMotor) {
-        //console.log("reload done");
-        if (ph > 5 || ph < 0 || temp > 25 || temp < 22) {
-          //console.log("value crossed");
-          MotoractnoToint = 1;
-          previousTimeMotor = currentTimeMotor;
-
-          try {
-            const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
-            const response = await fetch(apiUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' }
-            });
-
-            if (!response.ok) {
-              throw new Error(`API request failed with status ${response.status}`);
-            }
-
-          }
-
-          catch (error) {
-            console.error(error);
-            res.status(500).send('Error fetching data');
-          }
+  // actno = newdata["actuator"];
 
 
+  if (!automode) {
 
-          if (MotoractnoToint == 1) {
-            getMessaging().send({
-              notification: {
-                title: "Motor",
-                body: "Activated",
-              },
-              token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
-            });
-          }
-
-          
-
-        }
-        else {
-          MotoractnoToint = 0;
-
-        }
-        res.send(`${MotoractnoToint}`);
-
-      }
-      else {
-        //console.log("reload not done");
-        res.status(409).send("reload Not Done");
-      }
-    }
-
-    //CHANGE VALUES TO OPTIMUM
-    else if (actno = 2) {
-      //console.log("Feeder");
-      if (currentTimeFeeder - previousTimeFeeder >= eventIntervalFeeder) {
-        //console.log("reload done");
-        if (ph > 5 || ph < 0 || temp > 25 || temp < 22) {
-
-          //console.log("value crossed");
-          FeederactnoToint = 1;
-          previousTimeFeeder = currentTimeFeeder;
-
-
-          try {
-            const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
-            const response = await fetch(apiUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' }
-            });
-
-            if (!response.ok) {
-              throw new Error(`API request failed with status ${response.status}`);
-            }
-
-          }
-
-          catch (error) {
-            console.error(error);
-            res.status(500).send('Error fetching data');
-          }
-
-
-          if (FeederactnoToint == 1) {
-            getMessaging().send({
-              notification: {
-                title: "Feeder",
-                body: "Activated",
-              },
-              token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
-            });
-          }
-
-          
-        }
-        else {
-          FeederactnoToint = 0;
-        }
-        res.send(`${FeederactnoToint}`);
-
-      }
-      else {
-        res.status(409).send("reload Not Done");
-      }
-    }
-
-  }
-  else {
-
-    // if(MotoractnoToint==undefined || FeederactnoToint==undefined){
-    //   MotoractnoToint=0;
-    //   FeederactnoToint=0;
-    // }
-
-    // if (newdata["actuator"] === 1) {
-    //   if (newdata["value"] == true) {
-    //     MotoractnoToint = 1;
-    //   }
-    //   else if(newdata["value"] == false){
-    //     MotoractnoToint = 0;
-    //   }
-
-    // }
-    // elseif (newdata["actuator"] === 2) {
-    //   if (newdata["value"] == true) {
-    //     FeederactnoToint = 1;
-    //   }
-    //   else if(newdata["value"] == false){
-    //     FeederactnoToint = 0;
-    //   }
-
-    // }
-
+    MotoractnoToint = 0;
+    FeederactnoToint = 0;
 
     switch (newdata["actuator"]) {
       case 1:
@@ -330,133 +163,147 @@ app.post('/send-acvalue', async (req, res) => {
       res.status(500).send('Error fetching data');
     }
   }
+  else {
+    res.status(409).send('automatic');
+  }
 
 });
 
 
 
-//NOTIFICATION TRIGGER
-app.get('/get-noti', async (req, res) => {
+//NOTIFICATION TRIGGER + AUTO ACTUATOR
 
-  try {
-    const apiUrl = "https://api.thingspeak.com/channels/2336234/feeds.json?api_key=ED1802UZPY1V5E5J&results=1";
-    const response = await fetch(apiUrl);
+app.get('/get-noti', notiTrigger, async (req, res) => {
 
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+
+  let currentTimeMotor = Math.floor(Date.now() / 1000);
+  let currentTimeFeeder = Math.floor(Date.now() / 1000);
+  var rizzponse = "Hi";
+
+  if (automode) {
+
+    
+    rizzponse = rizzponse+"\nauto";
+
+    //console.log("Motor");
+    if (currentTimeMotor - previousTimeMotor >= eventIntervalMotor) {
+      //console.log("reload done");
+      if (ph > 5 || ph < 0 || temp > 24 || temp < 22) {
+        //console.log("value crossed");
+        MotoractnoToint = 1;
+        previousTimeMotor = currentTimeMotor;
+
+        try {
+          const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+          }
+
+        }
+
+        catch (error) {
+          console.error(error);
+          res.status(500).send('Error fetching data');
+        }
+
+
+
+        if (MotoractnoToint == 1) {
+          getMessaging().send({
+            notification: {
+              title: "Motor",
+              body: "Activated",
+            },
+            token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
+          });
+        }
+
+
+
+      }
+      else {
+        MotoractnoToint = 0;
+
+      }
+
+      rizzponse = rizzponse + `\n${MotoractnoToint}`;
+
+    }
+    else {
+      //console.log("reload not done");
+
+      rizzponse = rizzponse + "\nmotor reload Not Done";
     }
 
-    const data = await response.json();
 
-    const temp = data["feeds"][0]["field1"];
-    const ph = data["feeds"][0]["field2"];
+    //AUTOFEEDER
 
-    if (ph > 5 || ph < 0) {
+    //console.log("Feeder");
+    if (currentTimeFeeder - previousTimeFeeder >= eventIntervalFeeder) {
+      //console.log("reload done");
+      if (ph > 5 || ph < 0 || temp > 27 || temp < 22) {
 
-      await getMessaging().send({
-        notification: {
-          title: "pH",
-          body: "Threshold crossed",
-        },
-        token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
-      })
+        //console.log("value crossed");
+        FeederactnoToint = 1;
+        previousTimeFeeder = currentTimeFeeder;
+
+
+        try {
+          const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+          }
+
+        }
+
+        catch (error) {
+          console.error(error);
+          res.status(500).send('Error fetching data');
+        }
+
+
+        if (FeederactnoToint == 1) {
+          getMessaging().send({
+            notification: {
+              title: "Feeder",
+              body: "Activated",
+            },
+            token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
+          });
+        }
+
+
+      }
+      else {
+        FeederactnoToint = 0;
+      }
+
+      rizzponse = rizzponse + `\n${FeederactnoToint}`;
 
     }
-
-    if (temp > 25 || temp < 22) {
-
-      await getMessaging().send({
-        notification: {
-          title: "Temperature",
-          body: "Threshold crossed",
-        },
-        token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
-      })
+    else {
+      rizzponse = rizzponse + "\nfeeder reload Not Done";
     }
 
-
+    res.send(rizzponse);
 
   }
-
-  catch (error) {
-    console.error(error);
-    res.status(500).send('Error fetching data');
+  else {
+    res.status(409).send("not automatic");
   }
 
-
-
-
-  //NOTIFIATIONs OCCUR ONLY ONCE EVERY 10 MINS SET AKKU
-
-  // if (automode) {
-  //   //console.log("auto");
-  //   if (actno == 1) {
-  //     //console.log("Motor");
-  //     if (!isDoneMotor) {
-  //       //console.log("reload done");
-  //       if (ph > 5 || ph < 0 || temp > 25 || temp < 22) {
-  //         //console.log("value crossed");
-  //         isDoneMotor = true;
-  //         newdata = { "automode": automode, "actuator": actno, "value": true };
-  //         res.json(newdata);
-  //         console.log(newdata);
-  //         setTimeout(() => { isDoneMotor = false; }, 30000); // timeout of 4 hrs
-
-  //         if (acval == true) {
-  //           getMessaging().send({
-  //             notification: {
-  //               title: "Motor",
-  //               body: "Activated",
-  //             },
-  //             token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
-  //           });
-  //         }
-  //       }
-
-  //     }
-  //     else {
-  //       //console.log("reload not done");
-  //       res.status(409).send("reload Not Done");
-  //     }
-  //   }
-  //   else if (actno = 2) {
-  //     //console.log("Feeder");
-  //     if (!isDoneFeeder) {
-  //       //console.log("reload done");
-  //       if (ph > 5 || ph < 0 || temp > 25 || temp < 22) {
-  //         //console.log("value crossed");
-  //         newdata = { "automode": automode, "actuator": actno, "value": true };
-  //         isDoneFeeder = true;
-  //         res.json(newdata);
-  //         console.log(newdata);
-  //         setTimeout(() => { isDoneFeeder = false; }, 60000); // timeout of 12 hrs
-
-  //         if (acval == true) {
-  //           getMessaging().send({
-  //             notification: {
-  //               title: "Feeder",
-  //               body: "Activated",
-  //             },
-  //             token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
-  //           })
-  //         }
-  //       }
-
-  //     }
-  //     else {
-  //       res.status(409).send("reload Not Done");
-  //     }
-  //   }
-
-  // }
-  // else {
-  //   //console.log("not auto");
-  //   res.json(newdata);
-  //   console.log(newdata);
-  // }
 
 });
-
 
 
 
