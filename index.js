@@ -339,6 +339,11 @@ app.get('/get-noti', notiTrigger, async (req, res) => {
 
 });
 
+app.get('/activate', (req, res) => {
+
+  res.send("Activated");
+});
+
 
 
 app.listen(process.env.PORT || 3000, function () {
