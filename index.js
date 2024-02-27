@@ -188,7 +188,7 @@ app.get('/get-noti', notiTrigger, async (req, res) => {
     //console.log("Motor");
     if (currentTimeMotor - previousTimeMotor >= eventIntervalMotor) {
       //console.log("reload done");
-      if (ph > 5 || ph < 0 || temp > 24 || temp < 22) {
+      if (ph > 5 || ph < 0 || temp > 27 || temp < 22) {
         //console.log("value crossed");
         MotoractnoToint = 1;
         previousTimeMotor = currentTimeMotor;
