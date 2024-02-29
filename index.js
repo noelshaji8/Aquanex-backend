@@ -14,16 +14,32 @@ const app = express();
 var newdata;
 var ph;
 var temp;
+var data;
+
 var acval = false;
 var automode = true;
 var actno = 1;
-var MotoractnoToint = 0;
-var FeederactnoToint = 0;
+
+let MotoractnoToint;
+let FeederactnoToint;
+
 var previousTimeMotor = 0;
 var eventIntervalMotor = 60;
+
 var previousTimeFeeder = 0;
 var eventIntervalFeeder = 60;
-var data;
+
+var previousTimeNotif = 0;
+var eventIntervalNotif = 30;
+
+var previousRunTimeFeeder;
+var RunIntervalFeeder = 10;
+
+var previousRunTimeMotor;
+var RunIntervalMotor = 10;
+
+let currentRunTimeMotor;
+let currentRunTimeFeeder;
 
 
 app.use(express.json());
@@ -56,53 +72,69 @@ initializeApp({
 
 const notiTrigger = async (req, res, next) => {
 
-  try {
-    const apiUrl = "https://api.thingspeak.com/channels/2336234/feeds.json?api_key=ED1802UZPY1V5E5J&results=1";
-    let response = await fetch(apiUrl);
+  console.log("\n");
 
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+  let currentTimeNotif = Math.floor(Date.now() / 1000);
+
+  if (currentTimeNotif - previousTimeNotif >= eventIntervalNotif) {
+    console.log("notifs");
+
+    previousTimeNotif = currentTimeNotif;
+
+    try {
+      const apiUrl = "https://api.thingspeak.com/channels/2336234/feeds.json?api_key=ED1802UZPY1V5E5J&results=1";
+      let response = await fetch(apiUrl);
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      data = await response.json();
+
+      temp = data["feeds"][0]["field1"];
+      ph = data["feeds"][0]["field2"];
+
+      if (ph > 7.5 || ph < 6.5) {
+
+        await getMessaging().send({
+          notification: {
+            title: "pH",
+            body: "Threshold crossed",
+          },
+          token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
+        })
+
+      }
+
+      if (temp > 30 || temp < 22) {
+
+        await getMessaging().send({
+          notification: {
+            title: "Temperature",
+            body: "Threshold crossed",
+          },
+          token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
+        })
+      }
+
+
+
     }
 
-    data = await response.json();
-
-    temp = data["feeds"][0]["field1"];
-    ph = data["feeds"][0]["field2"];
-
-    if (ph > 5 || ph < 0) {
-
-      await getMessaging().send({
-        notification: {
-          title: "pH",
-          body: "Threshold crossed",
-        },
-        token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
-      })
-
+    catch (error) {
+      console.error(error);
+      res.status(500).send('Error fetching data');
     }
-
-    if (temp > 24 || temp < 22) {
-
-      await getMessaging().send({
-        notification: {
-          title: "Temperature",
-          body: "Threshold crossed",
-        },
-        token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
-      })
-    }
-
 
 
   }
-
-  catch (error) {
-    console.error(error);
-    res.status(500).send('Error fetching data');
+  else {
+    console.log("no notifs");
   }
+
   next();
-
 }
+
 
 
 //POST REQ FROM APP AND POST TO TS
@@ -142,26 +174,29 @@ app.post('/send-acvalue', async (req, res) => {
         break;
     }
 
+    res.send(`${MotoractnoToint},${FeederactnoToint}`);
 
 
-    try {
-      const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
 
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-      res.send(`${MotoractnoToint},${FeederactnoToint}`);
+    // try {
+    //   const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
+    //   const response = await fetch(apiUrl, {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' }
+    //   });
 
-    }
+    //   if (!response.ok) {
+    //     throw new Error(`API request failed with status ${response.status}`);
+    //   }
+    //   res.send(`${MotoractnoToint},${FeederactnoToint}`);
 
-    catch (error) {
-      console.error(error);
-      res.status(500).send('Error fetching data');
-    }
+    // }
+
+    // catch (error) {
+    //   console.error(error);
+    //   res.status(500).send('Error fetching data');
+    // }
+
   }
   else {
     res.status(409).send('automatic');
@@ -173,45 +208,24 @@ app.post('/send-acvalue', async (req, res) => {
 
 //NOTIFICATION TRIGGER + AUTO ACTUATOR
 
-app.get('/get-noti', notiTrigger, async (req, res) => {
-
+app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
 
   let currentTimeMotor = Math.floor(Date.now() / 1000);
   let currentTimeFeeder = Math.floor(Date.now() / 1000);
-  var rizzponse = "Hi";
+
 
   if (automode) {
 
 
-    rizzponse = rizzponse + "\nauto";
-
     //console.log("Motor");
     if (currentTimeMotor - previousTimeMotor >= eventIntervalMotor) {
       //console.log("reload done");
-      if (ph > 5 || ph < 0 || temp > 27 || temp < 22) {
-        //console.log("value crossed");
+      if (ph > 7.5 || ph < 6.5 || temp > 30 || temp < 22) {
+        //console.log(`${ph}+${temp}`);
         MotoractnoToint = 1;
         previousTimeMotor = currentTimeMotor;
 
-        try {
-          const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-          });
-
-          if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}`);
-          }
-
-        }
-
-        catch (error) {
-          console.error(error);
-          res.status(500).send('Error fetching data');
-        }
-
-
+        previousRunTimeMotor = Math.floor(Date.now() / 1000);
 
         if (MotoractnoToint == 1) {
           getMessaging().send({
@@ -227,51 +241,34 @@ app.get('/get-noti', notiTrigger, async (req, res) => {
 
       }
       else {
+        console.log("entered");
         MotoractnoToint = 0;
-        try {
-          const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-          });
-
-          if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}`);
-          }
-
-        }
-
-        catch (error) {
-          console.error(error);
-          res.status(500).send('Error fetching data');
-        }
+  
 
       }
 
-      rizzponse = rizzponse + `\n${MotoractnoToint}`;
+
 
     }
     else {
-      MotoractnoToint = 0;
-      try {
-        const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
 
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-        }
+      currentRunTimeMotor = Math.floor(Date.now() / 1000);
+
+      console.log("motor event reload not done");
+      if (currentRunTimeMotor - previousRunTimeMotor >= RunIntervalMotor) {
+        console.log("motor work time done");
+
+
+        //console.log("value crossed");
+        MotoractnoToint = 0;
+       
+
 
       }
-
-      catch (error) {
-        console.error(error);
-        res.status(500).send('Error fetching data');
+      else {
+        console.log("motor work time not done");
       }
 
-      rizzponse = rizzponse + "\nmotor reload Not Done";
     }
 
 
@@ -280,30 +277,14 @@ app.get('/get-noti', notiTrigger, async (req, res) => {
     //console.log("Feeder");
     if (currentTimeFeeder - previousTimeFeeder >= eventIntervalFeeder) {
       //console.log("reload done");
-      if (ph > 5 || ph < 0 || temp > 27 || temp < 22) {
+      if (ph > 7.5 || ph < 6.5 || temp > 30 || temp < 22) {
 
         //console.log("value crossed");
         FeederactnoToint = 1;
         previousTimeFeeder = currentTimeFeeder;
 
+        previousRunTimeFeeder = Math.floor(Date.now() / 1000);
 
-        try {
-          const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-          });
-
-          if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}`);
-          }
-
-        }
-
-        catch (error) {
-          console.error(error);
-          res.status(500).send('Error fetching data');
-        }
 
 
         if (FeederactnoToint == 1) {
@@ -320,51 +301,41 @@ app.get('/get-noti', notiTrigger, async (req, res) => {
       }
       else {
         FeederactnoToint = 0;
-        try {
-          const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-          });
-
-          if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}`);
-          }
-
-        }
-
-        catch (error) {
-          console.error(error);
-          res.status(500).send('Error fetching data');
-        }
+  
       }
 
-      rizzponse = rizzponse + `\n${FeederactnoToint}`;
+
 
     }
     else {
-      FeederactnoToint = 0;
-      try {
-        const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
 
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-        }
+      currentRunTimeFeeder = Math.floor(Date.now() / 1000);
+      console.log("feeder event reload not done");
+
+      if (currentRunTimeFeeder - previousRunTimeFeeder >= RunIntervalFeeder) {
+        //console.log("reload done");
+        console.log("feeder work time done");
+
+
+        //console.log("value crossed");
+        FeederactnoToint = 0;
+
+
 
       }
-
-      catch (error) {
-        console.error(error);
-        res.status(500).send('Error fetching data');
+      else {
+        console.log("feeder work time not done");
       }
-      rizzponse = rizzponse + "\nfeeder reload Not Done";
+   
+
     }
 
-    res.send(rizzponse);
+    res.send({
+      "motor": MotoractnoToint,
+      "feeder": FeederactnoToint
+    });
+
+    //res.send(rizzponse);
 
   }
   else {
@@ -382,7 +353,7 @@ app.get('/activate', (req, res) => {
 
 
 app.listen(process.env.PORT || 3000, function () {
-  console.log("Server started on port 3000");
+  console.log(`Server started on port ${process.env.PORT}`);
 });
 
 
@@ -393,4 +364,16 @@ CLEAN UP:
 
 THINGSPEAK POST CODE INTO SINGLE FUNCTION
 
+GET ENDPT FROM ESP32 TO HERE EVERY SECOND:
+  GET DATA FROM HERE FOR ACTUATOR (REMOVE TS FETCH) + RES.SEND(ACT VALUES) WORK
+   MILLIS FUNCTION FOR NOTIFCATION
+
+  CHANGE SEVER2 IN ESP32
+
+  ADD APIREQ LINE IN APP
+ 
 */
+
+
+
+
