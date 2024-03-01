@@ -148,8 +148,8 @@ app.post('/send-acvalue', async (req, res) => {
 
   if (!automode) {
 
-    // MotoractnoToint = 0;
-    // FeederactnoToint = 0;
+    MotoractnoToint = 0;
+    FeederactnoToint = 0;
 
     switch (newdata["actuator"]) {
       case 1:
