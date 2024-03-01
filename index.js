@@ -174,7 +174,8 @@ app.post('/send-acvalue', async (req, res) => {
         break;
     }
 
-    //res.send(`${MotoractnoToint},${FeederactnoToint}`);
+    
+    res.send(`${MotoractnoToint},${FeederactnoToint}`);
 
 
 
