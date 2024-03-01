@@ -148,8 +148,8 @@ app.post('/send-acvalue', async (req, res) => {
 
   if (!automode) {
 
-    MotoractnoToint = 0;
-    FeederactnoToint = 0;
+    // MotoractnoToint = 0;
+    // FeederactnoToint = 0;
 
     switch (newdata["actuator"]) {
       case 1:
@@ -174,7 +174,7 @@ app.post('/send-acvalue', async (req, res) => {
         break;
     }
 
-    res.send(`${MotoractnoToint},${FeederactnoToint}`);
+    //res.send(`${MotoractnoToint},${FeederactnoToint}`);
 
 
 
@@ -339,7 +339,11 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
 
   }
   else {
-    res.status(409).send("not automatic");
+    res.send({
+      "motor": MotoractnoToint,
+      "feeder": FeederactnoToint
+    });
+    //res.status(409).send("not automatic");
   }
 
 
