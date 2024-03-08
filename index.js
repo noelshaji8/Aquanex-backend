@@ -62,12 +62,10 @@ initializeApp({
   credential: cert({
     projectId: process.env.CYCLIC_PROJECT_ID,
     clientEmail: process.env.CYCLIC_CLIENT_EMAIL,
-    //privateKey: process.env.CYCLIC_PRIVATE_KEY
     privateKey: privateKey,
   }),
 
 });
-
 
 
 const notiTrigger = async (req, res, next) => {
@@ -136,6 +134,38 @@ const notiTrigger = async (req, res, next) => {
 }
 
 
+app.post('/settings', async (req, res) => {
+
+  let setdata = req.body
+
+  RunIntervalMotor =  setdata["motorRunTime"];
+  RunIntervalFeeder =   setdata["feederRunTime"];
+  eventIntervalMotor = setdata["motorInterval"];
+  eventIntervalFeeder = setdata["feederInterval"];
+
+  res.send(`post:\n ${RunIntervalMotor},${RunIntervalFeeder},${eventIntervalMotor},${eventIntervalFeeder}`);
+
+});
+
+
+
+app.get('/settings-read', async (req, res) => {
+
+  res.send(`get: ${RunIntervalMotor},${RunIntervalFeeder},${eventIntervalMotor},${eventIntervalFeeder}`);
+
+});
+
+app.get('/settings-default', async (req, res) => {
+
+  RunIntervalFeeder = 10;
+  RunIntervalMotor = 10;
+  eventIntervalFeeder = 60;
+  eventIntervalMotor = 60;
+
+  res.send({"motorRunTime": RunIntervalMotor,"feederRunTime": RunIntervalFeeder,"motorInterval": eventIntervalMotor,"feederInterval": eventIntervalFeeder});
+
+});
+
 
 //POST REQ FROM APP AND POST TO TS
 app.post('/send-acvalue', async (req, res) => {
@@ -144,7 +174,6 @@ app.post('/send-acvalue', async (req, res) => {
   // acval = newdata["value"];
   automode = newdata["automode"];
   // actno = newdata["actuator"];
-
 
   if (!automode) {
 
@@ -174,29 +203,7 @@ app.post('/send-acvalue', async (req, res) => {
         break;
     }
 
-    
     res.send(`${MotoractnoToint},${FeederactnoToint}`);
-
-
-
-    // try {
-    //   const apiUrl = `https://api.thingspeak.com/update?api_key=ML5MKGQJLZDPCMDC&field1=${MotoractnoToint}&field2=${FeederactnoToint}`;
-    //   const response = await fetch(apiUrl, {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' }
-    //   });
-
-    //   if (!response.ok) {
-    //     throw new Error(`API request failed with status ${response.status}`);
-    //   }
-    //   res.send(`${MotoractnoToint},${FeederactnoToint}`);
-
-    // }
-
-    // catch (error) {
-    //   console.error(error);
-    //   res.status(500).send('Error fetching data');
-    // }
 
   }
   else {
@@ -216,7 +223,6 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
 
 
   if (automode) {
-
 
     //console.log("Motor");
     if (currentTimeMotor - previousTimeMotor >= eventIntervalMotor) {
@@ -238,18 +244,12 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
           });
         }
 
-
-
       }
       else {
         console.log("entered");
         MotoractnoToint = 0;
-  
 
       }
-
-
-
     }
     else {
 
@@ -259,11 +259,8 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
       if (currentRunTimeMotor - previousRunTimeMotor >= RunIntervalMotor) {
         console.log("motor work time done");
 
-
         //console.log("value crossed");
         MotoractnoToint = 0;
-       
-
 
       }
       else {
@@ -271,8 +268,6 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
       }
 
     }
-
-
     //AUTOFEEDER
 
     //console.log("Feeder");
@@ -286,8 +281,6 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
 
         previousRunTimeFeeder = Math.floor(Date.now() / 1000);
 
-
-
         if (FeederactnoToint == 1) {
           getMessaging().send({
             notification: {
@@ -298,15 +291,11 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
           });
         }
 
-
       }
       else {
         FeederactnoToint = 0;
-  
+
       }
-
-
-
     }
     else {
 
@@ -316,26 +305,19 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
       if (currentRunTimeFeeder - previousRunTimeFeeder >= RunIntervalFeeder) {
         //console.log("reload done");
         console.log("feeder work time done");
-
-
         //console.log("value crossed");
         FeederactnoToint = 0;
-
-
 
       }
       else {
         console.log("feeder work time not done");
       }
-   
-
     }
 
     res.send({
       "motor": MotoractnoToint,
       "feeder": FeederactnoToint
     });
-
     //res.send(rizzponse);
 
   }
@@ -346,7 +328,6 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
     });
     //res.status(409).send("not automatic");
   }
-
 
 });
 
@@ -361,23 +342,6 @@ app.listen(process.env.PORT || 3000, function () {
   console.log(`Server started on port ${process.env.PORT}`);
 });
 
-
-
-
-/* 
-CLEAN UP:
-
-THINGSPEAK POST CODE INTO SINGLE FUNCTION
-
-GET ENDPT FROM ESP32 TO HERE EVERY SECOND:
-  GET DATA FROM HERE FOR ACTUATOR (REMOVE TS FETCH) + RES.SEND(ACT VALUES) WORK
-   MILLIS FUNCTION FOR NOTIFCATION
-
-  CHANGE SEVER2 IN ESP32
-
-  ADD APIREQ LINE IN APP
- 
-*/
 
 
 
