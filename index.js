@@ -143,7 +143,7 @@ app.post('/settings', async (req, res) => {
   eventIntervalMotor = setdata["motorInterval"];
   eventIntervalFeeder = setdata["feederInterval"];
 
-  res.send(`post:\n ${RunIntervalMotor},${RunIntervalFeeder},${eventIntervalMotor},${eventIntervalFeeder}`);
+  res.send({"motorRunTime": RunIntervalMotor,"feederRunTime": RunIntervalFeeder,"motorInterval": eventIntervalMotor,"feederInterval": eventIntervalFeeder});
 
 });
 
@@ -151,7 +151,7 @@ app.post('/settings', async (req, res) => {
 
 app.get('/settings-read', async (req, res) => {
 
-  res.send(`get: ${RunIntervalMotor},${RunIntervalFeeder},${eventIntervalMotor},${eventIntervalFeeder}`);
+  res.send({"motorRunTime": RunIntervalMotor,"feederRunTime": RunIntervalFeeder,"motorInterval": eventIntervalMotor,"feederInterval": eventIntervalFeeder});
 
 });
 
