@@ -174,8 +174,8 @@ app.get('/settings-default', async (req, res) => {
 
   phMin = 6.5;
   phMax = 7.5;
-  tempMin = 22;
-  tempMax = 30;
+  tempMin = 22.1;
+  tempMax = 30.1;
 
   res.send({ "motorRunTime": RunIntervalMotor, "feederRunTime": RunIntervalFeeder, "motorInterval": eventIntervalMotor, "feederInterval": eventIntervalFeeder, "phMin": phMin, "phMax": phMax, "tempMin": tempMin, "tempMax": tempMax });
 
