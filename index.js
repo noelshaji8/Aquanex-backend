@@ -40,8 +40,8 @@ var RunIntervalMotor = 10;
 
 var phMin = 6.5;
 var phMax = 7.5;
-var tempMin = 22.0;
-var tempMax = 30.0;
+var tempMin = 22.1;
+var tempMax = 30.1;
 
 let currentRunTimeMotor;
 let currentRunTimeFeeder;
