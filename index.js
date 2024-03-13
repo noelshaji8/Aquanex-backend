@@ -38,6 +38,11 @@ var RunIntervalFeeder = 10;
 var previousRunTimeMotor;
 var RunIntervalMotor = 10;
 
+var phMin = 6.5;
+var phMax = 7.5;
+var tempMin = 22;
+var tempMax = 30;
+
 let currentRunTimeMotor;
 let currentRunTimeFeeder;
 
@@ -92,7 +97,7 @@ const notiTrigger = async (req, res, next) => {
       temp = data["feeds"][0]["field1"];
       ph = data["feeds"][0]["field2"];
 
-      if (ph > 7.5 || ph < 6.5) {
+      if (ph > phMax || ph < phMin) {
 
         await getMessaging().send({
           notification: {
@@ -104,7 +109,7 @@ const notiTrigger = async (req, res, next) => {
 
       }
 
-      if (temp > 30 || temp < 22) {
+      if (temp > tempMax || temp < tempMin) {
 
         await getMessaging().send({
           notification: {
@@ -138,12 +143,17 @@ app.post('/settings', async (req, res) => {
 
   let setdata = req.body
 
-  RunIntervalMotor =  setdata["motorRunTime"];
-  RunIntervalFeeder =   setdata["feederRunTime"];
+  RunIntervalMotor = setdata["motorRunTime"];
+  RunIntervalFeeder = setdata["feederRunTime"];
   eventIntervalMotor = setdata["motorInterval"];
   eventIntervalFeeder = setdata["feederInterval"];
 
-  res.send({"motorRunTime": RunIntervalMotor,"feederRunTime": RunIntervalFeeder,"motorInterval": eventIntervalMotor,"feederInterval": eventIntervalFeeder});
+  phMin = setdata["phMin"];
+  phMax = setdata["phMax"];
+  tempMin = setdata["tempMin"];
+  tempMax = setdata["tempMax"];
+
+  res.send({ "motorRunTime": RunIntervalMotor, "feederRunTime": RunIntervalFeeder, "motorInterval": eventIntervalMotor, "feederInterval": eventIntervalFeeder, "phMin": phMin, "phMax": phMax, "tempMin": tempMin, "tempMax": tempMax });
 
 });
 
@@ -151,7 +161,7 @@ app.post('/settings', async (req, res) => {
 
 app.get('/settings-read', async (req, res) => {
 
-  res.send({"motorRunTime": RunIntervalMotor,"feederRunTime": RunIntervalFeeder,"motorInterval": eventIntervalMotor,"feederInterval": eventIntervalFeeder});
+  res.send({ "motorRunTime": RunIntervalMotor, "feederRunTime": RunIntervalFeeder, "motorInterval": eventIntervalMotor, "feederInterval": eventIntervalFeeder, "phMin": phMin, "phMax": phMax, "tempMin": tempMin, "tempMax": tempMax });
 
 });
 
@@ -162,7 +172,12 @@ app.get('/settings-default', async (req, res) => {
   eventIntervalFeeder = 60;
   eventIntervalMotor = 60;
 
-  res.send({"motorRunTime": RunIntervalMotor,"feederRunTime": RunIntervalFeeder,"motorInterval": eventIntervalMotor,"feederInterval": eventIntervalFeeder});
+  phMin = 6.5;
+  phMax = 7.5;
+  tempMin = 22;
+  tempMax = 30;
+
+  res.send({ "motorRunTime": RunIntervalMotor, "feederRunTime": RunIntervalFeeder, "motorInterval": eventIntervalMotor, "feederInterval": eventIntervalFeeder, "phMin": phMin, "phMax": phMax, "tempMin": tempMin, "tempMax": tempMax });
 
 });
 
@@ -227,7 +242,7 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
     //console.log("Motor");
     if (currentTimeMotor - previousTimeMotor >= eventIntervalMotor) {
       //console.log("reload done");
-      if (ph > 7.5 || ph < 6.5 || temp > 30 || temp < 22) {
+      if (ph > phMax || ph < phMin || temp > tempMax || temp < tempMin) {
         //console.log(`${ph}+${temp}`);
         MotoractnoToint = 1;
         previousTimeMotor = currentTimeMotor;
@@ -273,7 +288,7 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
     //console.log("Feeder");
     if (currentTimeFeeder - previousTimeFeeder >= eventIntervalFeeder) {
       //console.log("reload done");
-      if (ph > 7.5 || ph < 6.5 || temp > 30 || temp < 22) {
+      if (ph > phMax || ph < phMin || temp > tempMax || temp < tempMin) {
 
         //console.log("value crossed");
         FeederactnoToint = 1;
