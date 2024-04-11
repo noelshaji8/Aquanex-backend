@@ -104,7 +104,7 @@ const notiTrigger = async (req, res, next) => {
             title: "pH",
             body: "Threshold crossed",
           },
-          token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
+          token: "fArx9CC2Tc6ooZwFN6tjPf:APA91bHCoupEriRZq-n8COSCFMVf4WOV7xjUSUKTCJ1wahCCV8iEcakdWsjFDsqZPLh6xzpK_MXI5sZsmOF0THH6oSs-UDPEwf0pj6p7ayk_KukWtK9aO6KyzAxPgpRUric_Ay9BdDz3",
         })
 
       }
@@ -116,7 +116,7 @@ const notiTrigger = async (req, res, next) => {
             title: "Temperature",
             body: "Threshold crossed",
           },
-          token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
+          token: "fArx9CC2Tc6ooZwFN6tjPf:APA91bHCoupEriRZq-n8COSCFMVf4WOV7xjUSUKTCJ1wahCCV8iEcakdWsjFDsqZPLh6xzpK_MXI5sZsmOF0THH6oSs-UDPEwf0pj6p7ayk_KukWtK9aO6KyzAxPgpRUric_Ay9BdDz3",
         })
       }
 
@@ -255,7 +255,7 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
               title: "Motor",
               body: "Activated",
             },
-            token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
+            token: "fArx9CC2Tc6ooZwFN6tjPf:APA91bHCoupEriRZq-n8COSCFMVf4WOV7xjUSUKTCJ1wahCCV8iEcakdWsjFDsqZPLh6xzpK_MXI5sZsmOF0THH6oSs-UDPEwf0pj6p7ayk_KukWtK9aO6KyzAxPgpRUric_Ay9BdDz3",
           });
         }
 
@@ -302,7 +302,7 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
               title: "Feeder",
               body: "Activated",
             },
-            token: "cfbyG9QYSvizvOzX6nphbG:APA91bGhozCWJkSgOHBBG3utPfwt9jShpQ9UriQAb3tLEkwgzoMOAZC0sjUlSGzR9z3OBG6VKl4z6dvOf-9zY6JDyXxVADEJqULImlAsR3tYDJYDphNEX6OFyEHHShAed9rBJnqagOy8",
+            token: "fArx9CC2Tc6ooZwFN6tjPf:APA91bHCoupEriRZq-n8COSCFMVf4WOV7xjUSUKTCJ1wahCCV8iEcakdWsjFDsqZPLh6xzpK_MXI5sZsmOF0THH6oSs-UDPEwf0pj6p7ayk_KukWtK9aO6KyzAxPgpRUric_Ay9BdDz3",
           });
         }
 
