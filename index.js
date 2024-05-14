@@ -24,19 +24,19 @@ let MotoractnoToint;
 let FeederactnoToint;
 
 var previousTimeMotor = 0;
-var eventIntervalMotor = 60;
+var eventIntervalMotor = 30;
 
 var previousTimeFeeder = 0;
-var eventIntervalFeeder = 60;
+var eventIntervalFeeder = 30;
 
 var previousTimeNotif = 0;
 var eventIntervalNotif = 30;
 
 var previousRunTimeFeeder;
-var RunIntervalFeeder = 10;
+var RunIntervalFeeder = 4;
 
 var previousRunTimeMotor;
-var RunIntervalMotor = 10;
+var RunIntervalMotor = 4;
 
 var phMin = 6.5;
 var phMax = 7.5;
