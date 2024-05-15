@@ -288,7 +288,7 @@ app.get('/get-noti-actuator', notiTrigger, async (req, res) => {
     //console.log("Feeder");
     if (currentTimeFeeder - previousTimeFeeder >= eventIntervalFeeder) {
       //console.log("reload done");
-      if (ph > phMax || ph < phMin || temp > tempMax || temp < tempMin) {
+      if (ph < phMax && ph > phMin || temp < tempMax && temp > tempMin) {
 
         //console.log("value crossed");
         FeederactnoToint = 1;
